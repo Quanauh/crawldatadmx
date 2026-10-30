@@ -26,12 +26,6 @@ def check_spam(text):
     if len(text_clean) < 3 and text_clean not in ['êm', 'ổn', 'ồn', 'tệ', 'dở']: 
         return 1
     if len(set(text_clean.replace(' ', ''))) == 2: return 1
-
-    # Bắt các mẫu câu seeding quá chung chung, vô thưởng vô phạt
-    generic_patterns = r'^(tủ lạnh|máy giặt|tivi|máy lạnh|sản phẩm|đồ)?\s*(sử dụng|xài|dùng|nhìn chung)?\s*(rất ok|ok|ổn|tốt|ok lắm|rất tốt|tạm được)$'
-    if re.match(generic_patterns, text_clean):
-        return 1
-
     return 0
 
 # 3. Tạo DataFrame chuẩn
@@ -52,8 +46,8 @@ duplicates_count = df_labeled.groupby(['product', 'review_lower_clean'])['review
 product_total = df_labeled.groupby('product').size()
 ratio = duplicates_count / df_labeled['product'].map(product_total)
 
-# Cập nhật nhãn: Những review xuất hiện ở tỷ lệ >= 25% trong cùng 1 sản phẩm sẽ bị đánh spam
-df_labeled.loc[ratio >= 0.25, 'label'] = 1
+# Cập nhật nhãn: Những review xuất hiện ở tỷ lệ >= 25% VÀ > 3 lần trong cùng 1 sản phẩm sẽ bị đánh spam
+df_labeled.loc[(ratio >= 0.25) & (duplicates_count > 3), 'label'] = 1
 
 # Xóa cột phụ
 df_labeled = df_labeled.drop(columns=['review_lower_clean'])
