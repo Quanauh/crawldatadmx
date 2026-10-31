@@ -23,9 +23,9 @@ def check_spam(text):
     text_clean = re.sub(r'[^\w\s]', '', text).strip()
     
     # Quá ngắn
-    if len(text_clean) < 3 and text_clean not in ['êm', 'ổn', 'ồn', 'tệ', 'dở']: 
+    if len(text_clean) < 3 and text_clean not in ['êm', 'ổn', 'ồn', 'tệ', 'dở','tốt']: 
         return 1
-    if len(set(text_clean.replace(' ', ''))) == 2: return 1
+    if len(set(text_clean.replace(' ', ''))) == 2 and text_clean not in ['êm', 'ổn', 'ồn', 'tệ', 'dở','tốt']: return 1
     return 0
 
 # 3. Tạo DataFrame chuẩn
